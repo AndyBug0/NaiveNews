@@ -97,7 +97,7 @@ public class NewsPageActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Toast.makeText(NewsPageActivity.this, "Share to Sina", Toast.LENGTH_SHORT).show();
                         initSdk();
-                        startWebAuth();
+                        startAuth();
 
                         Intent intent = new Intent(NewsPageActivity.this, ShareActivity.class);
                         startActivity(intent);
@@ -163,7 +163,7 @@ public class NewsPageActivity extends AppCompatActivity {
         });
     }
     //在微博开发平台为应用申请的App Key
-    private static final String APP_KY = "2479326284";
+    private static final String APP_KY = "1004577051";
     //在微博开放平台设置的授权回调页
     private static final String REDIRECT_URL = "http://www.sina.com";
     //在微博开放平台为应用申请的高级权限

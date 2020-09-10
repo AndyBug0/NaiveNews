@@ -54,7 +54,7 @@ public class ShareActivity extends Activity implements View.OnClickListener, WbS
     private Button mCommitBtn;
 
     //在微博开发平台为应用申请的App Key
-    private static final String APP_KY = "2045436852";
+    private static final String APP_KY = "1004577051";
     //在微博开放平台设置的授权回调页
     private static final String REDIRECT_URL = "http://www.sina.com";
     //在微博开放平台为应用申请的高级权限

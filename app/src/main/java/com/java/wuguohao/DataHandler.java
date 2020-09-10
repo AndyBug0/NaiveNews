@@ -1,8 +1,11 @@
 package com.java.wuguohao;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.java.wuguohao.bean.NewsData;
@@ -14,7 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +29,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -301,18 +310,47 @@ public class DataHandler {
                             JSONArray relations = COVID.getJSONArray("relations");
                             for (int j = 0; j < relations.length(); j++) {
                                 JSONObject relations_j = relations.getJSONObject(j);
-                                relation = relation + " " + relations_j.getString("relation");
-                                relation_url = relation_url + " " + relations_j.getString("url");
-                                relation_label = relation_label + " " + relations_j.getString("label");
-                                relation_forward = relation_forward + " " + relations_j.getString("forward");
+                                if(relations_j.has("relation"))
+                                    relation = relation + " " + relations_j.getString("relation");
+                                if(relations_j.has("url"))
+                                    relation_url = relation_url + " " + relations_j.getString("url");
+                                if(relations_j.has("label"))
+                                    relation_label = relation_label + " " + relations_j.getString("label");
+                                if(relations_j.has("forward"))
+                                    relation_forward = relation_forward + " " + relations_j.getString("forward");
                             }
                         }
                         String img = map.getString("img");
+                        img = "https://bkimg.cdn.bcebos.com/pic/94cad1c8a786c9175889eec0c23d70cf3ac75744?x-bce-process=image/resize,m_lfit,w_268,limit_1/format,f_jpg";
+                        int BUFFER_SIZE = 1024;
+                        byte[] buf = new byte[BUFFER_SIZE];
+                        Bitmap myBitmap = null;
+                        if(img != null){
+                            URL my_url;
+                            HttpURLConnection httpUrl = null;
+                            BufferedInputStream bis = null;
+                            try{
+                                my_url = new URL(img);
+                                httpUrl = (HttpURLConnection) my_url.openConnection();
+                                httpUrl.connect();
+                                bis = new BufferedInputStream(httpUrl.getInputStream());
+                                myBitmap = BitmapFactory.decodeStream(bis);
+                                bis.close();
+                                httpUrl.disconnect();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (ClassCastException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        System.out.println("----------------------------");
+
                         if (NewsMap.find(NewsMap.class, "url=?", url).isEmpty()) {
                             NewsMap newsMap = new NewsMap(hot, label, url, enwiki, baidu, ziwiki, properity,
                                     relation, relation_url, relation_label, relation_forward, img);
                             newsMap.save();
                         }
+
                     }
                     NewsMapEntity newsMapEntity = new NewsMapEntity(strArg, dataUrls);
                     newsMapEntity.save();
