@@ -18,6 +18,12 @@
         tools:layout="@layout/fragment_static" />
 
     <fragment
+        android:id="@+id/navigation_graph"
+        android:name="com.java.wuguohao.ui.graph.GraphFragment"
+        android:label="@string/title_graph"
+        android:layout="@layout/fragment_graph"/>
+
+    <fragment
         android:id="@+id/navigation_me"
         android:name="com.java.wuguohao.ui.me.MeFragment"
         android:label="@string/title_me"

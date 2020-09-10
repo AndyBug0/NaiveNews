@@ -9,7 +9,6 @@ import java.util.List;
 public class SearchNewsEvent {
 
     public List<String> searchTitle(String subString){
-        NewsData.find(NewsData.class,"place=?",subString);
         List<NewsEvent> list = NewsEvent.findWithQuery(NewsEvent.class, "SELECT * FROM NEWS_EVENT WHERE title like ?","%"+subString+"%");
         List<String> strings = new ArrayList<>();
         for(NewsEvent event : list){
@@ -18,7 +17,6 @@ public class SearchNewsEvent {
         return strings;
     }
     public List<String> searchContent(String subString){
-        NewsData.find(NewsData.class,"place=?",subString);
         List<NewsEvent> list = NewsEvent.findWithQuery(NewsEvent.class, "SELECT * FROM NEWS_EVENT WHERE content like ?","%"+subString+"%");
         List<String> strings = new ArrayList<>();
         for(NewsEvent event : list){

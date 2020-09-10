@@ -6,16 +6,31 @@
     android:clickable="true"
     android:orientation="vertical">
 
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/news_tab_essence"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        style="@style/tabBackGroundStyle"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="@color/white"
-        app:tabTextColor="@color/colorPrimary"
-        app:tabIndicatorColor="@color/colorPrimary"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/news_tab_essence"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="9"
+            style="@style/tabBackGroundStyle"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="@color/colorPrimary"
+            app:tabIndicatorColor="@color/colorPrimary"/>
+        <ImageButton
+            android:id="@+id/class_menu"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical|end"
+            android:scaleType="centerInside"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_menu"
+            android:focusable="true" />
+    </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/news_vp_essence"

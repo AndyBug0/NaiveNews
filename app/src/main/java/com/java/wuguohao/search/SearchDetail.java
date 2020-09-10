@@ -47,6 +47,7 @@ public class SearchDetail extends AppCompatActivity {
         });
 
         String keyWord = getIntent().getStringExtra("KeyWord");
+        searchView.setQueryHint(keyWord);
         final SearchNewsEvent search = new SearchNewsEvent();
         LinkedHashSet<String> newsId = new LinkedHashSet<>();
         newsId.addAll(search.searchTitle(keyWord));

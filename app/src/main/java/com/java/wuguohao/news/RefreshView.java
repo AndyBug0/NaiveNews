@@ -111,7 +111,7 @@ public class RefreshView extends ListView implements AbsListView.OnScrollListene
     public void onScrollStateChanged(AbsListView view, final int scrollState) {
         if (!isRefreshing && !isLoading) {
             if (scrollState == SCROLL_STATE_IDLE) {
-                if (lassVisible == totalItemCount) {
+                if (totalItemCount != 0 && lassVisible == totalItemCount) {
                     isLoading = true;
                     footer.setVisibility(View.VISIBLE);
                     //Load data

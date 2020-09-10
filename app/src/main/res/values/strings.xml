@@ -6,6 +6,7 @@
     <string name="title_home">首页</string>
     <string name="title_static">疫情数据</string>
     <string name="title_me">我的</string>
+    <string name="title_graph">疫情图谱</string>
     <string name="pull_to_refresh">下拉刷新</string>
     <string name="release_to_refresh">松开刷新</string>
     <string name="refreshing">刷新中……</string>
@@ -17,10 +18,20 @@
     <string name="news_map_url">https://innovaapi.aminer.cn/covid/api/v1/pneumonia/entityquery</string>
     <string name="news_scholar_url">https://innovaapi.aminer.cn/predictor/api/v1/valhalla/highlight/get_ncov_expers_list?v=2</string>
     <array name="home_video_tab">
-        <item>全部@all</item>
-        <item>事件@event</item>
-        <item>焦点@points</item>
-        <item>新闻@news</item>
-        <item>论文@papers</item>
+        <item>all</item>
+        <item>news</item>
+        <item>paper</item>
+    </array>
+    <array name="province_in_China">
+        <item>北京@Beijing</item>
+        <item>海南@Hainan</item>
+        <item>上海@Shanghai</item>
+    </array>
+    <array name="country_in_world">
+        <item>中国@China</item>
+        <item>美国@United States of America</item>
+        <item>英国@United Kingdom</item>
+        <item>巴西@Brazil</item>
+        <item>印度@India</item>
     </array>
 </resources>

@@ -2,9 +2,16 @@ package com.java.wuguohao.ui.datastatic;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,41 +25,190 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.java.wuguohao.DataHandler;
 import com.java.wuguohao.R;
 import com.java.wuguohao.bean.NewsData;
+import com.java.wuguohao.news.NewsPageActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class StaticFragment extends Fragment {
+    private View root;
+    private Button button1;     //国内情况
+    private Button button2;     //世界情况
+    private TextView showPlace; //显示地区所在
+    private LineChart lineChart;
+
+    private ListView listView;
+    private ArrayAdapter<String> adapter1;
+    private ArrayAdapter<String> adapter2;
+    private List<String> placeList1 = new ArrayList<>();
+    private List<String> placeList2 = new ArrayList<>();
+    private String place;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_static, container, false);
-        setHasOptionsMenu(true);
+        root = inflater.inflate(R.layout.fragment_static, container, false);
+        lineChart = (LineChart) root.findViewById(R.id.lineChart);
+        showPlace = (TextView) root.findViewById(R.id.static_place);
+        place = "China|Beijing";    //初始值
 
-        String country = "China";
-        String province = "";
-        String county   = "";
-        province = (county.equals("")) ? province : (province + "|" + county);
-        country = (province.equals("")) ? country : (country + "|" + province);
-        List<NewsData> newsDataList = NewsData.find(NewsData.class, "place = ?", country);
+        initPopListView();
+        initButtonClicker();
 
-        NewsData newsData = newsDataList.get(0);
-        List<Integer> confirmed;
-        List<Integer> cured;
-        List<Integer> dead;
-        String place = newsData.getPlace();
-        String begin = newsData.getBegin();
-        confirmed = newsData.getConfirmed();
-        cured = newsData.getCured();
-        dead  = newsData.getDead();
-
-        LineChart lineChart = (LineChart) root.findViewById(R.id.lineChart);
-        initLineChart(place, confirmed, cured, dead, lineChart);
+        drawLineChart("China|Beijing", "中国 北京", lineChart);
 
         return root;
+    }
+
+    private void initPopListView() {
+        listView = root.findViewById(R.id.static_pop_list);
+        List<String> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+        String [] array1 = getResources().getStringArray(R.array.province_in_China);
+        String [] array2 = getResources().getStringArray(R.array.country_in_world);
+        for (String str : array1) {
+            String [] text = str.split("@");
+            list1.add(text[0]);
+            placeList1.add(text[1]);
+        }
+        for (String str : array2) {
+            String [] text = str.split("@");
+            list2.add(text[0]);
+            placeList2.add(text[1]);
+        }
+        adapter1 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, list1);
+        adapter2 = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, list2);
+        listView.setVisibility(View.GONE);
+        listView.setClickable(false);
+    }
+
+    private void popList(int btn_id) {
+        if (btn_id == 1) {
+            listView.setAdapter(adapter1);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                    String selectedPlace = placeList1.get(i);
+                    place = "China|" + selectedPlace;
+                    hideList();
+                    button1.setSelected(false);
+                    button1.setTag(false);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawLineChart(place, "中国 " + adapter1.getItem(i), lineChart);
+                        }
+                    }, 50);
+
+                }
+            });
+        } else if (btn_id == 2) {
+            listView.setAdapter(adapter2);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                    place = placeList2.get(i);
+                    hideList();
+                    button2.setSelected(false);
+                    button2.setTag(false);
+                    new Handler().postDelayed((new Runnable() {
+                        @Override
+                        public void run() {
+                            drawLineChart(place, adapter2.getItem(i), lineChart);
+                        }
+                    }), 50);
+                }
+            });
+        }
+        listView.setClickable(true);
+        listView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideList() {
+        listView.setClickable(false);
+        listView.setVisibility(View.GONE);
+    }
+
+    private void initButtonClicker() {
+        button1 = (Button) root.findViewById(R.id.static_button_inChina);
+        button2 = (Button) root.findViewById(R.id.static_button_other_country);
+        button1.setTag(false);   //表示被按之前是否被选中
+        button2.setTag(false);
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isSelected = !((Boolean) button1.getTag()); //表示被按之后是否被选中
+                button1.setTag(isSelected);
+                button2.setTag(false);
+                button2.setSelected(false);
+                button2.setPressed(false);
+
+                if (isSelected) {
+                    button1.setSelected(true);
+                    popList(1);
+                } else {
+                    button1.setSelected(false);
+                    hideList();
+                }
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isSelected = !((Boolean) button2.getTag());
+                button2.setTag(isSelected);
+                button1.setTag(false);
+                button1.setSelected(false);
+                button1.setSelected(false);
+
+                if (isSelected) {
+                    button2.setSelected(true);
+                    popList(2);
+                } else {
+                    button2.setSelected(false);
+                    hideList();
+                }
+            }
+        });
+    }
+
+    private void drawLineChart(final String place, final String place_to_show, final LineChart lineChart) {
+        root.findViewById(R.id.loading_info).setVisibility(View.VISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                List<NewsData> newsDataList = NewsData.find(NewsData.class, "place = ?", place);
+
+                int connectTryCount = 0;
+                while (newsDataList.isEmpty() && connectTryCount < 3) {
+                    connectTryCount ++;
+                    new DataHandler().readData(place, getActivity());
+                    newsDataList = NewsData.find(NewsData.class, "place = ?", place);
+                }
+                if (newsDataList.isEmpty()) {   //找不到数据
+                    Toast.makeText(StaticFragment.this.getContext(), "FAILED：加载失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                root.findViewById(R.id.loading_info).setVisibility(View.GONE);
+                showPlace.setText(place_to_show);
+                NewsData newsData = newsDataList.get(0);
+                List<Integer> confirmed;
+                List<Integer> cured;
+                List<Integer> dead;
+                String begin = newsData.getBegin();
+                confirmed = newsData.getConfirmed();
+                cured = newsData.getCured();
+                dead  = newsData.getDead();
+                initLineChart(place, confirmed, cured, dead, lineChart);
+            }
+        }, 50);
     }
 
     /**
@@ -166,7 +322,7 @@ public class StaticFragment extends Fragment {
         //图例：得到Lengend
         Legend legend = lineChart.getLegend();
         //隐藏Lengend
-        legend.setEnabled(false);
+        legend.setEnabled(true);
         //隐藏描述
         Description description = new Description();
         description.setText(place);

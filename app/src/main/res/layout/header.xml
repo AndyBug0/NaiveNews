@@ -9,31 +9,27 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="5dp"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal" >
         <ProgressBar
             android:id="@+id/header_progressbar"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            style="?android:attr/progressBarStyleInverse"
-            />
+            android:indeterminateTint="@color/colorPrimary"
+            style="?android:attr/progressBarStyleInverse" />
         <TextView
             android:id="@+id/header_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/loading"
-            />
+            android:text="@string/loading" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        >
+        android:gravity="center" >
         <TextView
             android:id="@+id/header_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="时间"
-            />
+            android:text="时间" />
     </LinearLayout>
 </LinearLayout>

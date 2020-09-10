@@ -41,4 +41,26 @@
             android:textColor="@color/white"
             android:text="@string/splash_word2" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal" >
+        <ProgressBar
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:indeterminateTint="@color/white"
+            style="?android:attr/progressBarStyle" />
+        <TextView
+            android:id="@+id/loading_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:text="加载中 ······"
+            android:paddingLeft="@dimen/item_left" />
+    </LinearLayout>
 </RelativeLayout>

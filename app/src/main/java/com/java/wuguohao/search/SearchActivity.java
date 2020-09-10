@@ -112,11 +112,12 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String keyWord = searchHistory.get(i);
+
             }
         });
 
         int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text",null,null);
-        TextView searchText = (TextView) searchView.findViewById(searchTextId);
+        final TextView searchText = (TextView) searchView.findViewById(searchTextId);
         searchText.setTextColor(getResources().getColor(R.color.white));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -134,6 +135,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                     savePreferences();
                     //跳转到搜索得到的新闻列表页面
+                    searchView.setQueryHint(query);
                     Intent intent = new Intent(SearchActivity.this, SearchDetail.class);
                     intent.putExtra("KeyWord", query);
                     startActivity(intent);

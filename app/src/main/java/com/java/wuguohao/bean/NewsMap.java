@@ -1,7 +1,5 @@
 package com.java.wuguohao.bean;
 
-import android.util.Log;
-
 import com.orm.SugarRecord;
 
 import org.json.JSONException;
@@ -24,16 +22,19 @@ public class NewsMap extends SugarRecord {
     String relation_label;
     String relation_forward;
     String img;
-    public NewsMap(){
-        Log.e("NewsMap Constructor","Call the empty constructor");
-    }
+    public NewsMap(){}
     public NewsMap(String hot, String label, String url, String enwiki, String baidu, String ziwiki, String properity,
                    String relation, String relation_url, String relation_label, String relation_forward, String img){
         this.hot = hot; this.label = label; this.url = url; this.enwiki = enwiki; this.baidu = baidu; this.ziwiki = ziwiki;
         this.properity = properity; this.relation = relation; this.relation_url = relation_url; this.relation_label = relation_label;
         this.relation_forward = relation_forward; this.img = img;
-        Log.e("NewsMap Constructor",this.properity);
     }
+
+    public float getHot() { return Float.valueOf(hot); }
+
+    public String getDescription() { return enwiki + baidu + ziwiki; }
+
+    public String getImage() { return img; }
 
     public String getLabel() {
         return label;
@@ -41,39 +42,39 @@ public class NewsMap extends SugarRecord {
 
     public List<String> getRelation() {
         String []relations = relation.split(" ");
-        List<String> toInteger = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
         int len = relations.length;
         for(int i = 0;i < len;i++){
-            toInteger.add(relations[i]);
+            resultList.add(relations[i]);
         }
-        return toInteger;
+        return resultList;
     }
     public List<String> getRelationUrl() {
         String []relationUrls = relation_url.split(" ");
-        List<String> toInteger = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
         int len = relationUrls.length;
         for(int i = 0;i < len;i++){
-            toInteger.add(relationUrls[i]);
+            resultList.add(relationUrls[i]);
         }
-        return toInteger;
+        return resultList;
     }
     public List<String> getRelationLabel() {
         String []relationsLabel = relation_label.split(" ");
-        List<String> toInteger = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
         int len = relationsLabel.length;
         for(int i = 0;i < len;i++){
-            toInteger.add(relationsLabel[i]);
+            resultList.add(relationsLabel[i]);
         }
-        return toInteger;
+        return resultList;
     }
     public List<String> getRelationForward() {
         String []relationsForward = relation_forward.split(" ");
-        List<String> toInteger = new ArrayList<>();
+        List<String> resultList = new ArrayList<>();
         int len = relationsForward.length;
         for(int i = 0;i < len;i++){
-            toInteger.add(relationsForward[i]);
+            resultList.add(relationsForward[i]);
         }
-        return toInteger;
+        return resultList;
     }
     public List<String> getProperities(){
         try{

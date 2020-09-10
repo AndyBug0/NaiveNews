@@ -1,11 +1,14 @@
 package com.java.wuguohao;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.java.wuguohao.bean.NewsData;
 import com.java.wuguohao.bean.NewsEvent;
 import com.java.wuguohao.bean.NewsMap;
+import com.java.wuguohao.bean.NewsMapEntity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -24,16 +28,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class DataHandler {
     private Context mContext;
-    List<String> _id_list;
-
-    public List<String> getIdList() { return _id_list; }
 
     public void readEvent(final int page, final int size, final String type, Context mContext_){
         mContext = mContext_;
         ReadByGet r;
-        System.out.println(mContext.getString(R.string.news_event_url));
         r = new ReadByGet(mContext.getString(R.string.news_event_url)+"?type="+type+"&page="+page+"&size="+size, 1);
-        Log.i("SUBTHREAD", mContext.getString(R.string.news_event_url));
         Thread t1 = new Thread(r);
         t1.start();
         try {
@@ -47,8 +46,7 @@ public class DataHandler {
         mContext = mContext_;
         ReadByGet r;
         r = new ReadByGet(mContext.getString(R.string.news_data_url), 2);
-        r.setPlace(place);
-        Log.i("SUBTHREAD", mContext.getString(R.string.news_data_url));
+        r.setStringArg(place);
         Thread t2 = new Thread(r);
         t2.start();
         try {
@@ -57,11 +55,11 @@ public class DataHandler {
             e.printStackTrace();
         }
     }
-    public void readMap(final int id, final String entity, Context mContext_){
+    public void readMap(final String entity, Context mContext_){
         mContext = mContext_;
         ReadByGet r;
-        r = new ReadByGet(mContext.getString(R.string.news_map_url)+"?entity="+entity,id);
-        Log.i("SUBTHREAD", mContext.getString(R.string.news_map_url));
+        r = new ReadByGet(mContext.getString(R.string.news_map_url)+"?entity="+entity, 3);
+        r.setStringArg(entity);
         Thread t3 = new Thread(r);
         t3.start();
         try {
@@ -71,18 +69,38 @@ public class DataHandler {
         }
     }
 
+    public Bitmap readImage(final String url) {
+        URL imageURL = null;
+        Bitmap bitmap = null;
+        try {
+            imageURL = new URL(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        try {
+            HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
+            conn.setDoInput(true);
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            bitmap = BitmapFactory.decodeStream(is);
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
     private class ReadByGet extends Thread {
         String thisurl;
         int url_id;
-        String place;
+        String strArg;
 
         ReadByGet(String url, Integer targetID){
             thisurl = url;
             url_id = targetID;
-            _id_list = new ArrayList<>();
         }
 
-        public void setPlace(String place) { this.place = place; }
+        public void setStringArg(String arg) { this.strArg = arg; }
 
         @Override
         public void run() {
@@ -120,19 +138,13 @@ public class DataHandler {
                 switch (url_id){
                     case 1:
                         parseNewsEvent(buffer.toString());
-//                        List<NewsEvent> e = NewsEvent.find(NewsEvent.class, "lang = ?", "en");
                         break;
                     case 2:
-                        parseNewsData(buffer.toString(),"China");
+                        parseNewsData(buffer.toString());
                         break;
                     case 3:
                         parseNewsMap(buffer.toString());
-//                        List<NewsMap> e = NewsMap.find(NewsMap.class, "label=?", "病毒");
-//                        List<NewsMap> e = NewsMap.listAll(NewsMap.class);
-//                        Log.e("fuckyou",e.toString());
                     case 4:
-
-                    case 5:
 
                     default:
                 }
@@ -155,13 +167,17 @@ public class DataHandler {
                 for (int i=0; i < datas.length(); i++)    {
                     JSONObject data = datas.optJSONObject(i);
                     String id_ = data.optString("_id");
-                    _id_list.add(id_);
                     String aminer_id = data.optString("aminer_id");
+                    //author
                     JSONArray authors_name = data.optJSONArray("authors");
                     //author
-                    JSONObject authors_name_obj = new JSONObject();
-                    authors_name_obj.put("authors",authors_name);
-                    String authors = authors_name_obj.toString();
+                    String authors = "";
+                    if (authors_name != null) {
+                        for (int j = 0; j < authors_name.length(); j++) {
+                            JSONObject authors_name_obj = authors_name.optJSONObject(j);
+                            authors = authors + authors_name_obj.getString("name") + " ";
+                        }
+                    }
                     String category = data.optString("category");
                     String content = data.optString("content");
                     String date = data.optString("date");
@@ -214,11 +230,11 @@ public class DataHandler {
             }
 
         }
-        void parseNewsData(String jsonData,String place) {
-            try{
-                if (NewsData.find(NewsData.class, "place=?", place).isEmpty()) {
+        void parseNewsData(String jsonData) {
+            if (NewsData.find(NewsData.class, "place=?", strArg).isEmpty()) {
+                try {
                     JSONObject jsonObject = new JSONObject(jsonData);
-                    JSONObject value = jsonObject.getJSONObject(place);
+                    JSONObject value = jsonObject.getJSONObject(strArg);
                     String begin = value.getString("begin");
                     JSONArray data = value.getJSONArray("data");
                     String confirmed = "";
@@ -233,69 +249,76 @@ public class DataHandler {
                         cured = cured + " ";
                         dead = dead + " ";
                     }
-                    NewsData newsData = new NewsData(place, begin, confirmed, cured, dead);
+                    NewsData newsData = new NewsData(strArg, begin, confirmed, cured, dead);
                     newsData.save();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e){
-                e.printStackTrace();
             }
         }
-        void parseNewsMap(String jsonData){
-            try{
-                JSONObject jsonObject = new JSONObject(jsonData);
-                String code = jsonObject.getString("code");
-                String msg  = jsonObject.getString("msg");
-                JSONArray data = jsonObject.getJSONArray("data");
-                int len = data.length();
-                for(int i = 0;i < len;i++){
-                    JSONObject map = data.getJSONObject(i);
-                    String hot = map.getString("hot");
-                    String label = map.getString("label");
-                    Log.e("label",label);
-                    String url = map.getString("url");
-                    //abstract info
-                    JSONObject abstractInfo = map.getJSONObject("abstractInfo");
-                    String enwiki = "";
-                    String baidu = "";
-                    String ziwiki = "";
-                    if(map.has("enwiki")){
-                        enwiki = abstractInfo.getString("enwiki");
-                    }
-                    if(abstractInfo.has("baidu")) {
-                        baidu = abstractInfo.getString("baidu");
-                    }
-                    if(abstractInfo.has("zhwiki")){
-                        ziwiki = abstractInfo.getString("zhwiki");
-                    }
-                    // COVID
-                    JSONObject COVID = abstractInfo.getJSONObject("COVID");
-                    String properity = "";
-                    if(COVID.has("properties")){
-                        JSONObject properties = COVID.getJSONObject("properties");
-                        properity = properties.toString();       //todo change to object
-                    }
+        void parseNewsMap(String jsonData) {
+            if (NewsMapEntity.find(NewsMapEntity.class, "entity=?", strArg).isEmpty()) {
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonData);
+                    String code = jsonObject.getString("code");
+                    String msg = jsonObject.getString("msg");
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    int len = data.length();
+                    List<String> dataUrls = new ArrayList<>();
+                    for (int i = 0; i < len; i++) {
+                        JSONObject map = data.getJSONObject(i);
+                        String hot = map.getString("hot");
+                        String label = map.getString("label");
+                        String url = map.getString("url");
+                        dataUrls.add(url);
+                        //abstract info
+                        JSONObject abstractInfo = map.getJSONObject("abstractInfo");
+                        String enwiki = "";
+                        String baidu = "";
+                        String ziwiki = "";
+                        if (map.has("enwiki")) {
+                            enwiki = abstractInfo.getString("enwiki");
+                        }
+                        if (abstractInfo.has("baidu")) {
+                            baidu = abstractInfo.getString("baidu");
+                        }
+                        if (abstractInfo.has("zhwiki")) {
+                            ziwiki = abstractInfo.getString("zhwiki");
+                        }
+                        // COVID
+                        JSONObject COVID = abstractInfo.getJSONObject("COVID");
+                        String properity = "";
+                        if (COVID.has("properties")) {
+                            JSONObject properties = COVID.getJSONObject("properties");
+                            properity = properties.toString();       //todo change to object
+                        }
 
-                    String relation = "";                           //todo split the stringf
-                    String relation_url = "";
-                    String relation_label = "";
-                    String relation_forward = "";
-                    if(COVID.has("relations")) {
-                        JSONArray relations = COVID.getJSONArray("relations");
-                        for (int j = 0; j < relations.length(); j++) {
-                            JSONObject relations_j = relations.getJSONObject(i);
-                            relation = relation + " " + relations_j.getString("relation");
-                            relation_url = relation_url + " " + relations_j.getString("url");
-                            relation_label = relation_label + " " + relations_j.getString("label");
-                            relation_forward = relation_forward + " " + relations_j.getString("forward");
+                        String relation = "";                           //todo split the stringf
+                        String relation_url = "";
+                        String relation_label = "";
+                        String relation_forward = "";
+                        if (COVID.has("relations")) {
+                            JSONArray relations = COVID.getJSONArray("relations");
+                            for (int j = 0; j < relations.length(); j++) {
+                                JSONObject relations_j = relations.getJSONObject(j);
+                                relation = relation + " " + relations_j.getString("relation");
+                                relation_url = relation_url + " " + relations_j.getString("url");
+                                relation_label = relation_label + " " + relations_j.getString("label");
+                                relation_forward = relation_forward + " " + relations_j.getString("forward");
+                            }
+                        }
+                        String img = map.getString("img");
+                        if (NewsMap.find(NewsMap.class, "url=?", url).isEmpty()) {
+                            NewsMap newsMap = new NewsMap(hot, label, url, enwiki, baidu, ziwiki, properity,
+                                    relation, relation_url, relation_label, relation_forward, img);
+                            newsMap.save();
                         }
                     }
-                    String img = map.getString("img");
-                    NewsMap newsMap = new NewsMap( hot,  label,  url,  enwiki,  baidu,  ziwiki,  properity,
-                            relation,  relation_url,  relation_label,  relation_forward,  img);
-                    newsMap.save();
+                    NewsMapEntity newsMapEntity = new NewsMapEntity(strArg, dataUrls);
+                    newsMapEntity.save();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e){
-                e.printStackTrace();
             }
         }
     }

@@ -10,7 +10,10 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi' //, 'armeabi-v7a','arm64-v8a'
+        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -18,15 +21,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    //my add
-    signingConfigs{
-        releaseConfig{
-            keyAlias 'key0'
-            keyPassword 'qwertyuiop'
-            storePassword 'qwertyuiop'
-            storeFile file('C:\\Users\\15009\\AndroidStudioProjects\\NaiveNews\\signature\\signature.jks')
         }
     }
 }
@@ -48,5 +42,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.github.satyan:sugar:1.5'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.sina.weibo.sdk:core:10.9.0:openDefaultRelease@aar'
 
 }

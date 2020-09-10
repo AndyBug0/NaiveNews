@@ -34,6 +34,7 @@ public class NewsEvent extends SugarRecord{
 
     public String getID() { return _id; }
     public String getTitle() { return title; }
+    public String getAuthors() { return authors; }
     public String getSource() { return source; }
     public String getDate() { return date; }
     public String getType() { return type; }
@@ -48,9 +49,10 @@ public class NewsEvent extends SugarRecord{
         this.seg_text = seg_text; this.source = source; this.tflag = tflag; this.time = time; this.title = title; this.type = type;
         this.authors = authors;
         this.entities = entities;
-        this.authors = regionIDs;
+        this.regionIDs = regionIDs;
         this.related_events = related_events;
         this.urls = urls;
         this.isRead = isRead;
     }
+
 }

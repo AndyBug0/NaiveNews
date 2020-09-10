@@ -7,13 +7,8 @@
         android:icon="@drawable/ic_search"
         menu:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_collection"
-        android:title="收藏"
-        android:icon="@drawable/ic_collection"
-        menu:showAsAction="never" />
-    <item
         android:id="@+id/action_share"
         android:title="分享"
         android:icon="@drawable/ic_share"
-        menu:showAsAction="never" />
+        menu:showAsAction="ifRoom" />
 </menu>
