@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorPrimaryLight">#9251ED</color>
+    <color name="colorPrimaryLight">#CC9251ED</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
@@ -12,4 +12,8 @@
     <color name="white">#FFFFFF</color>
     <color name="whiteDark">#D2D2D2</color>
     <color name="pink">#ED578A</color>
+    <color name="dirtYellow">#CC976C50</color>
+    <color name="darkCyan">#CC4A807A</color>
+    <color name="darkBlue">#CC4646AC</color>
+    <color name="darkGreen">#CC4E884E</color>
 </resources>

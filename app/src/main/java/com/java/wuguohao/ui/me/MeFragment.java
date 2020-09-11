@@ -53,7 +53,7 @@ public class MeFragment extends Fragment implements SlideListView.RemoveListener
                 }
                 newsList.clear();
                 editor.clear();
-                editor.commit();
+                editor.apply();
                 historyList.setVisibility(View.GONE);
                 historyList.setClickable(false);
                 emptyInfo.setVisibility(View.VISIBLE);
@@ -70,7 +70,7 @@ public class MeFragment extends Fragment implements SlideListView.RemoveListener
         } else {
             for (int i = ids.size() - 1; i >= 0; i --) {
                 NewsEvent news = NewsEvent.find(NewsEvent.class, "_id=?", ids.get(i)).get(0);
-                newsList.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), false));
+                newsList.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.getType(), false));
             }
             adapter = new NewsAdapter(getActivity(), newsList);
             historyList.setAdapter(adapter);
@@ -104,7 +104,7 @@ public class MeFragment extends Fragment implements SlideListView.RemoveListener
         news.isRead = false;
         news.save();
         editor.putStringSet("id", ids);
-        editor.commit();
+        editor.apply();
         newsList.remove(position);
         adapter.notifyDataSetChanged();
     }

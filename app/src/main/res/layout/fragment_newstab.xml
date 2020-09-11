@@ -25,10 +25,22 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="20dp"
+            android:layout_margin="3dp"
             android:layout_gravity="center_vertical|end"
             android:scaleType="centerInside"
             android:background="@color/transparent"
             android:src="@drawable/ic_menu"
+            android:focusable="true" />
+        <ImageButton
+            android:id="@+id/news_search"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="20dp"
+            android:layout_margin="3dp"
+            android:layout_gravity="center_vertical|end"
+            android:scaleType="centerInside"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_search_dark"
             android:focusable="true" />
     </LinearLayout>
 

@@ -22,13 +22,15 @@ import com.java.wuguohao.news.NewsItem;
 import com.java.wuguohao.news.NewsPageActivity;
 import com.java.wuguohao.news.RefreshView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 public class ContentFragment extends Fragment implements RefreshView.LoadListener {
-
     private View viewContent;
     private String mType;
     private String mTitle;
@@ -40,7 +42,6 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
     private int listPageNum;
 
     public String getTitle() { return mTitle; }
-    public String getFragmentType() { return mType; }
 
     public int compareDate(NewsEvent event1, NewsEvent event2) {
         String [] date1 = event1.getDate().split("[ ,:]");
@@ -107,12 +108,22 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
         refreshView = (RefreshView) viewContent.findViewById(R.id.refresh_view);
         refreshView.setInteface(this);
 
+        initialClusterList();
+
         listPageNum = 1;
-        List<NewsEvent> newsEventList;
+        List<NewsEvent> newsEventList = new ArrayList<>();
         if (mType.equals("all")) {
             newsEventList = NewsEvent.listAll(NewsEvent.class);
-        } else {
+        } else if (mType.equals("paper") || mType.equals("news")){
             newsEventList = NewsEvent.find(NewsEvent.class, "type=?", mType);
+        } else {    //聚类事件
+            List<NewsEvent> list = NewsEvent.find(NewsEvent.class, "type=?", "event");
+            for (NewsEvent news : list) {
+                String id = news.getID();
+                if (eventCluster.containsKey(id) && mType.equals(eventCluster.get(id))) {
+                    newsEventList.add(news);
+                }
+            }
         }
         if (newsEventList.isEmpty()) {
             refreshView.setVisibility(View.GONE);
@@ -128,10 +139,10 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
             int num = (newsEventList.size() < 15) ? newsEventList.size() : 15;
             for (int i = 0; i < num; i ++) {
                 NewsEvent news = newsEventList.get(i);
-                if (news.getType().equals("news")) {
-                    content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.isRead));
-                } else if (news.getType().equals("paper")) {
-                    content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.isRead));
+                if (news.getType().equals("paper")) {
+                    content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.getType(), news.isRead));
+                } else {
+                    content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.getType(), news.isRead));
                 }
             }
             adapter = new NewsAdapter(getActivity(), content);
@@ -163,6 +174,43 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
         return viewContent;
     }
 
+    private static HashMap<String, String> eventCluster = new HashMap<>();
+
+    private void initialClusterList() {
+        if (eventCluster.isEmpty()) {
+            List<String> clusters = new ArrayList<>();
+            InputStream input1 = getResources().openRawResource(R.raw.cluster);
+            Scanner scin1 = new Scanner(input1);
+            while (scin1.hasNext()) {
+                clusters.add(scin1.next());
+            }
+            scin1.close();
+            try {
+                input1.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            List<String> ids = new ArrayList<>();
+            InputStream input2 = getResources().openRawResource(R.raw.id);
+            Scanner scin2 = new Scanner(input2);
+            while (scin2.hasNext()) {
+                ids.add(scin2.next());
+            }
+            scin2.close();
+            try {
+                input2.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int num = clusters.size();
+            for (int i = 0; i < num; i ++) {
+                eventCluster.put(ids.get(i), clusters.get(i));
+            }
+        }
+    }
+
     // 实现refresh接口
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -181,8 +229,17 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
         List<NewsEvent> newsEventList;
         if (mType.equals("all")) {
             newsEventList = NewsEvent.listAll(NewsEvent.class);
-        } else {
+        } else if (mType.equals("paper") || mType.equals("news")){
             newsEventList = NewsEvent.find(NewsEvent.class, "type=?", mType);
+        } else {    //聚类事件
+            List<NewsEvent> list = NewsEvent.find(NewsEvent.class, "type=?", "event");
+            newsEventList = new ArrayList<>();
+            for (NewsEvent news : list) {
+                String id = news.getID();
+                if (eventCluster.containsKey(id) && mType.equals(eventCluster.get(id))) {
+                    newsEventList.add(news);
+                }
+            }
         }
         if (newsEventList.isEmpty()) {
             refreshView.setVisibility(View.GONE);
@@ -198,10 +255,10 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
             int num = (newsEventList.size() < 15) ? newsEventList.size() : 15;
             for (int i = 0; i < num; i++) {
                 NewsEvent news = newsEventList.get(i);
-                if (news.getType().equals("news")) {
-                    content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.isRead));
-                } else if (news.getType().equals("paper")) {
-                    content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.isRead));
+                if (news.getType().equals("paper")) {
+                    content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.getType(), news.isRead));
+                } else {
+                    content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.getType(), news.isRead));
                 }
             }
             adapter.notifyDataSetChanged();
@@ -226,8 +283,17 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
         List<NewsEvent> newsEventList;
         if (mType.equals("all")) {
             newsEventList = NewsEvent.listAll(NewsEvent.class);
-        } else {
+        } else if (mType.equals("paper") || mType.equals("news")){
             newsEventList = NewsEvent.find(NewsEvent.class, "type=?", mType);
+        } else {    //聚类事件
+            List<NewsEvent> list = NewsEvent.find(NewsEvent.class, "type=?", "event");
+            newsEventList = new ArrayList<>();
+            for (NewsEvent news : list) {
+                String id = news.getID();
+                if (eventCluster.containsKey(id) && mType.equals(eventCluster.get(id))) {
+                    newsEventList.add(news);
+                }
+            }
         }
         newsEventList.sort(new Comparator<NewsEvent>() {
             @Override
@@ -236,11 +302,12 @@ public class ContentFragment extends Fragment implements RefreshView.LoadListene
             }
         });
         for (int i = 0; i < 15; i++) {
+            if ((i + 15 * (listPageNum - 1)) >= newsEventList.size()) break;
             NewsEvent news = newsEventList.get(i + 15 * (listPageNum - 1));
-            if (news.getType().equals("news")) {
-                content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.isRead));
-            } else if (news.getType().equals("paper")) {
-                content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.isRead));
+            if (news.getType().equals("paper")) {
+                content.add(new NewsItem(news.getTitle(), news.getAuthors(), news.getDate(), news.getID(), news.getType(), news.isRead));
+            } else {
+                content.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.getType(), news.isRead));
             }
         }
         adapter.notifyDataSetChanged();

@@ -55,7 +55,7 @@ public class SearchDetail extends AppCompatActivity {
 
         for (String id : newsId) {
             NewsEvent news = NewsEvent.find(NewsEvent.class, "_id=?", id).get(0);
-            searchNews.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.isRead));
+            searchNews.add(new NewsItem(news.getTitle(), news.getSource(), news.getDate(), news.getID(), news.getType(), news.isRead));
         }
 
         adapter = new NewsAdapter(this, searchNews);
@@ -91,7 +91,7 @@ public class SearchDetail extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     LinkedHashSet<String> newSet = new LinkedHashSet<>(searchHistory);
                     editor.putStringSet("search", newSet);
-                    editor.commit();
+                    editor.apply();
                     //跳转到搜索得到的新闻列表页面
                     Intent intent = new Intent(SearchDetail.this, SearchDetail.class);
                     intent.putExtra("KeyWord", query);

@@ -85,8 +85,8 @@
             <ListView
                 android:id="@+id/static_pop_list"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:background="@drawable/round_view_with_stroke"
+                android:layout_height="400dp"
+                android:background="@drawable/round_list_view_with_stroke"
                 android:visibility="gone" />
             <LinearLayout
                 android:id="@+id/loading_info"

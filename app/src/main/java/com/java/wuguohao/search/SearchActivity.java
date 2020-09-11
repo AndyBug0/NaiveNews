@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
@@ -88,7 +89,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchView.setQueryHint(searchText);
                 //调整记录为第一个
                 searchHistory.remove(i);
-                searchHistory.add(searchText);
+                searchHistory.add(0, searchText);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -108,13 +109,6 @@ public class SearchActivity extends AppCompatActivity {
             searchList.setVisibility(View.VISIBLE);
             searchList.setClickable(true);
         }
-        searchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String keyWord = searchHistory.get(i);
-
-            }
-        });
 
         int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text",null,null);
         final TextView searchText = (TextView) searchView.findViewById(searchTextId);
@@ -123,6 +117,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (searchView != null) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                     if (!searchHistory.contains(query)) {
                         searchHistory.add(0, query);
                         if (adapter == null) {
@@ -155,7 +151,7 @@ public class SearchActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         LinkedHashSet<String> set = new LinkedHashSet<>(searchHistory);
         editor.putStringSet("search", set);
-        editor.commit();
+        editor.apply();
     }
 
     private class SearchAdapter extends BaseAdapter {

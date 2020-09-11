@@ -24,6 +24,12 @@
         android:layout="@layout/fragment_graph"/>
 
     <fragment
+        android:id="@+id/navigation_professor"
+        android:name="com.java.wuguohao.ui.scholar.ScholarFragment"
+        android:label="@string/title_professor"
+        tools:layout="@layout/fragment_scholar"/>
+
+    <fragment
         android:id="@+id/navigation_me"
         android:name="com.java.wuguohao.ui.me.MeFragment"
         android:label="@string/title_me"

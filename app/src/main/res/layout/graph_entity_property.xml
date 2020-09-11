@@ -3,9 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/grayLight"
-    android:background="@drawable/round_view"
-    android:layout_margin="3dp"
+    android:background="@drawable/round_view_with_stroke"
+    android:layout_margin="4dp"
     android:orientation="horizontal" >
     <TextView
         android:id="@+id/entity_property_label"

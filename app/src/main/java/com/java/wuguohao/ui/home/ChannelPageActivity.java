@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.java.wuguohao.R;
 
@@ -47,9 +50,14 @@ public class ChannelPageActivity extends AppCompatActivity {
             myType.add("all");
             myType.add("news");
             myType.add("paper");
+            myType.add("0");
+            myType.add("1");
+            myType.add("2");
+            myType.add("3");
+            myType.add("4");
             editor.putStringSet("my_channel", myType);
             editor.putBoolean("set", true);
-            editor.commit();
+            editor.apply();
         }
         for (String type : myType) {
             myChannel.addView(createChannelView(type, myChannel.getContext(), true));
@@ -61,13 +69,15 @@ public class ChannelPageActivity extends AppCompatActivity {
 
     private TextView createChannelView(final String type, Context context, boolean isMyChannel) {
         TextView view = new TextView(context);
-        view.setBackground(getResources().getDrawable(R.drawable.round_view));
+        view.setBackground(ContextCompat.getDrawable(context, R.drawable.round_text_with_back));
         view.setText(NewsFragment.titleMap.get(type));
-        view.setBackgroundColor(getResources().getColor(R.color.grayLight));
         view.setPadding(5, 5, 5 , 5);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(3,3,3,3);//4个参数按顺序分别是左上右下
+        view.setLayoutParams(layoutParams);
         view.setGravity(Gravity.CENTER);
         view.setTag(type);
-        view.setWidth(300);
+        view.setWidth(250);
         view.setHeight(100);
         View.OnClickListener listener;
         if (type.equals("all")) {
@@ -94,7 +104,7 @@ public class ChannelPageActivity extends AppCompatActivity {
                             editor.putStringSet("my_channel", myType);
                             editor.putStringSet("option_channel", optionalType);
                             editor.putBoolean("set", true);
-                            editor.commit();
+                            editor.apply();
                         } else {
 
                         }
@@ -122,7 +132,7 @@ public class ChannelPageActivity extends AppCompatActivity {
                         editor.putStringSet("my_channel", myType);
                         editor.putStringSet("option_channel", optionalType);
                         editor.putBoolean("set", true);
-                        editor.commit();
+                        editor.apply();
                     }
                 };
             }
@@ -138,6 +148,7 @@ public class ChannelPageActivity extends AppCompatActivity {
 
     private void initButtonView() {
         ImageView returnButton = (ImageView) findViewById(R.id.channel_return_button);
+        returnButton.setColorFilter(getResources().getColor(R.color.white));
         final TextView editButton = (TextView) findViewById(R.id.channel_edit);
 
         editButton.setOnClickListener(new View.OnClickListener() {

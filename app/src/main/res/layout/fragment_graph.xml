@@ -5,15 +5,75 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.java.wuguohao.ui.graph.GraphFragment">
-    <SearchView
-        android:id="@+id/entity_search_bar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:background="@color/colorPrimary" />
+        android:gravity="center"
+        android:orientation="horizontal" >
+        <ImageView
+            android:id="@+id/graph_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:scaleType="centerInside"
+            android:background="@color/transparent"
+            android:clickable="true"
+            android:src="@drawable/ic_back" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical" >
+            <SearchView
+                android:id="@+id/entity_search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:searchIcon="@drawable/ic_search_dark"
+                android:iconifiedByDefault="false" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="@dimen/item_left"
+                android:layout_marginRight="@dimen/item_right"
+                android:background="@color/colorPrimaryDark" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/graph_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="horizontal" >
+        <ProgressBar
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:indeterminateTint="@color/colorPrimary"
+            style="?android:attr/progressBarStyle" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="加载中 ······" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/graph_load_fail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone"
+        android:text="找不到该实体对应图谱" />
     <ListView
         android:id="@+id/entity_list"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 </LinearLayout>

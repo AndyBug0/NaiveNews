@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +20,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
-import com.java.wuguohao.MainActivity;
 import com.java.wuguohao.R;
 import com.java.wuguohao.bean.NewsEvent;
 import com.java.wuguohao.search.SearchActivity;
@@ -34,10 +35,6 @@ import com.sina.weibo.sdk.openapi.WBAPIFactory;
 import java.util.HashSet;
 
 public class NewsPageActivity extends AppCompatActivity {
-    private TextView titleView;
-    private TextView sourceView;
-    private TextView dateView;
-    private TextView contentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +61,30 @@ public class NewsPageActivity extends AppCompatActivity {
         HashSet<String> ids = (HashSet<String>) sharedPreferences.getStringSet("id", new HashSet<String>());
         ids.add(news.getID());
         editor.putStringSet("id", ids);
-        editor.commit();
+        editor.apply();
 
-        titleView = (TextView) findViewById(R.id.news_page_title);
-        sourceView = (TextView) findViewById(R.id.news_page_source);
-        dateView = (TextView) findViewById(R.id.news_page_date);
-        contentView = (TextView) findViewById(R.id.news_page_content);
+        TextView titleView = (TextView) findViewById(R.id.news_page_title);
+        ImageView sourceIcon = (ImageView) findViewById(R.id.news_page_from);
+        TextView sourceView = (TextView) findViewById(R.id.news_page_source);
+        TextView dateView = (TextView) findViewById(R.id.news_page_date);
+        TextView contentView = (TextView) findViewById(R.id.news_page_content);
+
+        titleView.setMaxLines(17);
         titleView.setText(news.getTitle());
-        sourceView.setText(news.getSource());
         dateView.setText(news.getDate());
         contentView.setText(news.getContent());
+        if (news.getType().equals("paper")) {
+            sourceIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_author));
+            sourceView.setText(news.getAuthors());
+        } else {
+            if (news.getSource().isEmpty()) {
+                sourceIcon.setVisibility(View.GONE);
+                sourceView.setVisibility(View.GONE);
+            } else {
+                sourceIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_source));
+                sourceView.setText(news.getSource());
+            }
+        }
     }
 
     @Override
@@ -95,11 +106,15 @@ public class NewsPageActivity extends AppCompatActivity {
                 sinaShare.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(NewsPageActivity.this, "Share to Sina", Toast.LENGTH_SHORT).show();
                         initSdk();
                         startAuth();
 
+                        String title = ((TextView) findViewById(R.id.news_page_title)).getText().toString();
+                        String content = ((TextView) findViewById(R.id.news_page_content)).getText().toString();
+
                         Intent intent = new Intent(NewsPageActivity.this, ShareActivity.class);
+                        intent.putExtra("title", title);
+                        intent.putExtra("content", content);
                         startActivity(intent);
                     }
                 });

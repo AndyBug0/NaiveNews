@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.java.wuguohao.R;
+import com.java.wuguohao.search.SearchActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class NewsFragment extends Fragment {
     private TabLayout tab_essence;
     private ViewPager vp_essence;
     private ImageButton menu;
+    private ImageButton search;
     private ContentAdapter adapter;
     private List<ContentFragment> fragments;
 
@@ -37,6 +39,11 @@ public class NewsFragment extends Fragment {
         titleMap.put("all", "全部");
         titleMap.put("news", "新闻");
         titleMap.put("paper", "论文");
+        titleMap.put("0", "COV研究");
+        titleMap.put("1", "临床试验");
+        titleMap.put("2", "对抗新冠");
+        titleMap.put("3", "攻关项目");
+        titleMap.put("4", "团队协作");
     }
 
     @Nullable
@@ -46,13 +53,6 @@ public class NewsFragment extends Fragment {
         initContentView(viewContent);
         initData();
 
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(getActivity(), ChannelPageActivity.class), 1);
-            }
-        });
-
         return viewContent;
     }
 
@@ -60,28 +60,10 @@ public class NewsFragment extends Fragment {
         this.tab_essence = (TabLayout) viewContent.findViewById(R.id.news_tab_essence);
         this.vp_essence = (ViewPager) viewContent.findViewById(R.id.news_vp_essence);
         this.menu = (ImageButton) viewContent.findViewById(R.id.class_menu);
+        this.search = (ImageButton) viewContent.findViewById(R.id.news_search);
     }
 
     public void initData() {
-//        //获取标签数据
-//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("channel", Context.MODE_PRIVATE);
-//
-//        //创建一个viewpager的adapter
-//        fragments = new ArrayList<>();
-//        boolean isSet = sharedPreferences.getBoolean("set", false);
-//        if (isSet) {
-//            HashSet<String> types = (HashSet<String>) sharedPreferences.getStringSet("my_channel", new HashSet<String>());
-//            for (String type : types) {
-//                fragments.add(new ContentFragment(titleMap.get(type), type));
-//            }
-//        } else {
-//            String [] types = getResources().getStringArray(R.array.home_video_tab);
-//            for (String type : types) {
-//                fragments.add(new ContentFragment(titleMap.get(type), type));
-//            }
-//        }
-//
-//        ContentAdapter adapter = new ContentAdapter(getFragmentManager(), fragments);
         setTab();
         this.vp_essence.setAdapter(adapter);
 
@@ -91,7 +73,14 @@ public class NewsFragment extends Fragment {
         this.menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                startActivityForResult(new Intent(getActivity(), ChannelPageActivity.class), 1);
+            }
+        });
 
+        this.search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), SearchActivity.class));
             }
         });
     }
@@ -107,7 +96,7 @@ public class NewsFragment extends Fragment {
                 fragments.add(new ContentFragment(titleMap.get(type), type));
             }
         } else {
-            String [] types = getResources().getStringArray(R.array.home_video_tab);
+            String [] types = {"all", "news", "paper", "0", "1", "2", "3", "4"};
             for (String type : types) {
                 fragments.add(new ContentFragment(titleMap.get(type), type));
             }

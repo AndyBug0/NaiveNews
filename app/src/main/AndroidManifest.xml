@@ -3,7 +3,9 @@
     package="com.java.wuguohao">
     <!--没有该权限可能会导致aid获取失败-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,7 +20,7 @@
         <meta-data android:name="QUERY_LOG" android:value="true"/>
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.java.wuguohao.bean"/>
 
-        <activity android:name=".SplashActivity" >
+        <activity android:name=".SplashActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,11 +30,12 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
-        <activity android:name=".news.NewsPageActivity" />
-        <activity android:name=".search.SearchActivity" />
-        <activity android:name=".search.SearchDetail" />
-        <activity android:name=".ui.home.ChannelPageActivity" />
-        <activity android:name=".news.ShareActivity" />
+        <activity android:name=".news.NewsPageActivity" android:screenOrientation="portrait" />
+        <activity android:name=".search.SearchActivity" android:screenOrientation="portrait" />
+        <activity android:name=".search.SearchDetail" android:screenOrientation="portrait" />
+        <activity android:name=".ui.home.ChannelPageActivity" android:screenOrientation="portrait" />
+        <activity android:name=".news.ShareActivity" android:screenOrientation="portrait" />
+        <activity android:name=".ui.scholar.ScholarPageActivity" android:screenOrientation="portrait" />
     </application>
 
 </manifest>

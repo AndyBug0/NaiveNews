@@ -87,7 +87,9 @@ public class ShareActivity extends Activity implements View.OnClickListener, WbS
     @Override
     public void onClick(View v) {
         if (v == mCommitBtn) {
-            doWeiboShare();
+            String title = getIntent().getStringExtra("title").toString();
+            String content = getIntent().getStringExtra("content").toString();
+            doWeiboShare(title, content);
         }
     }
 
@@ -97,7 +99,7 @@ public class ShareActivity extends Activity implements View.OnClickListener, WbS
         mWBAPI.doResultIntent(data, this);
     }
 
-    private void doWeiboShare() {
+    private void doWeiboShare(String title, String content) {
         WeiboMultiMessage message = new WeiboMultiMessage();
 
         TextObject textObject = new TextObject();
@@ -105,8 +107,7 @@ public class ShareActivity extends Activity implements View.OnClickListener, WbS
 
         // 分享文字
         if (mShareText.isChecked()) {
-            text = "这里设置您要分享的内容！";
-            textObject.text = text;
+            textObject.text = "【" + title + "】\n\n" + content;
             message.textObject = textObject;
         }
 
@@ -122,8 +123,8 @@ public class ShareActivity extends Activity implements View.OnClickListener, WbS
         if (mShareUrl.isChecked()) {
             WebpageObject webObject = new WebpageObject();
             webObject.identify = UUID.randomUUID().toString();
-            webObject.title = "标题";
-            webObject.description = "描述";
+            webObject.title = title;
+            webObject.description = content;
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_logo);
             ByteArrayOutputStream os = null;
             try {
